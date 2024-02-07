@@ -1,0 +1,35 @@
+{
+    "compilerOptions": {
+        "target": "esnext",
+        "module": "esnext",
+        "moduleResolution": "node",
+        "strict": true,
+        "jsx": "preserve",
+        "sourceMap": true,
+        "resolveJsonModule": true,
+        "esModuleInterop": true,
+        "lib": [
+            "esnext",
+            "dom"
+        ],
+        "types": [
+            "vite/client",
+            "jquery",
+            "bootstrap",
+            "jquery.nicescroll",
+            "select2"
+        ],
+        "baseUrl": ".",
+        "paths": {
+            "@/*": [
+                "resources/*"
+            ],
+            "@components/*": [
+                "resources/views/components/*"
+            ]
+        }
+    },
+    "include": [
+        "resources/**/*"
+    ]
+}

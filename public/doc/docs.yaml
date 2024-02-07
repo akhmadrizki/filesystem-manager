@@ -1,0 +1,220 @@
+openapi: 3.0.0
+info:
+  title: Filesystem Manager
+  description: OpenAPI specification for the Filesystem Manager API
+  version: 1.0.0
+servers:
+  - url: "https://filesystem-manager.tmdsite.my.id"
+paths:
+  /api/files/upload:
+    post:
+      summary: Upload a file
+      description: |
+        Upload a file in your project. The file will be stored in the path you specified in the request body. If the path is already exist, the file will be overwritten.
+      operationId: uploadFile
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                path:
+                  type: string
+                  description: The path where the file will be stored
+                file:
+                  type: string
+                  format: binary
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UploadFileSuccess"
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: The error message
+                  errors:
+                    type: string
+                    description: The detailed error message
+  /api/files/delete:
+    delete:
+      summary: Delete a file
+      description: Delete a file in your project. The file will be deleted permanently.
+      operationId: deleteFile
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                path:
+                  type: string
+                  description: The path of the file that will be deleted
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: The success message
+
+  /api/files/presigned/:file:
+    get:
+      summary: Get a file with Presigned URL
+      description: Get the actual file with a presigned URL
+      operationId: getPresignedUrl
+      parameters:
+        - name: file
+          in: path
+          required: true
+          description: The path of the file
+          schema:
+            type: string
+      responses:
+        302:
+          description: Found
+          content:
+            binary/octet-stream:
+              schema:
+                type: string
+                format: binary
+
+  /api/directories/create:
+    post:
+      operationId: createDirectory
+      summary: Create a directory
+      description: Create a directory in your project. The directory will be created in the path you specified in the request body.
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                path:
+                  type: string
+                  description: The path where the directory will be created
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: The success message
+
+  /api/directories/delete:
+    post:
+      operationId: deleteDirectory
+      summary: Delete a directory
+      description: Delete a directory in your project. The directory will be deleted permanently.
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                path:
+                  type: string
+                  description: The path of the directory that will be deleted
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: The success message
+
+  /api/directories/contents:
+    post:
+      summary: Get the contents of a directory
+      description: Get a list of files and directories in a directory. The API will respond with an array of object if the current requested path is a directory.
+      operationId: directoryGetContents
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                path:
+                  type: string
+                  description: The path of the directory
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                description: The API will respond with an array of object if the current requested path is a directory.
+                type: array
+                items:
+                  $ref: "#/components/schemas/File"
+            application/octet-stream:
+              schema:
+                description: The API will respond with a streamed file if the current requested path is indeed a file.
+                type: string
+                format: binary
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+
+  schemas:
+    File:
+      type: object
+      properties:
+        name:
+          type: string
+        path:
+          type: string
+        is_directory:
+          type: boolean
+        size:
+          type: integer
+        last_modified:
+          type: string
+          format: date-time
+    UploadFileSuccess:
+      type: object
+      properties:
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            name:
+              type: string
+            path:
+              type: string
+            url:
+              type: string

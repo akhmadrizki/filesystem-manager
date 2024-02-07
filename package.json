@@ -1,0 +1,39 @@
+{
+    "private": true,
+    "scripts": {
+        "dev": "vite",
+        "build": "vite build",
+        "lint": "eslint --ext .vue,.ts,.js ./resources",
+        "lint:fix": "eslint --ext .vue,.ts,.js ./resources --fix",
+        "typecheck": "vue-tsc --skipLibCheck --noEmit"
+    },
+    "devDependencies": {
+        "@fullhuman/postcss-purgecss": "^5.0.0",
+        "@types/bootstrap": "^5.2.8",
+        "@types/jquery": "^3.5.24",
+        "@types/jquery.nicescroll": "^3.7.4",
+        "@types/select2": "^4.0.60",
+        "@typescript-eslint/eslint-plugin": "^6.8.0",
+        "@typescript-eslint/parser": "^6.8.0",
+        "@vitejs/plugin-vue": "^4.4.0",
+        "@vue/compiler-sfc": "^3.3.6",
+        "eslint": "^8.52.0",
+        "eslint-config-prettier": "^9.0.0",
+        "eslint-plugin-vue": "^9.17.0",
+        "prettier": "^3.0.3",
+        "sass": "^1.69.4",
+        "typescript": "5.2.2",
+        "vite": "^4.5.2",
+        "vite-plugin-laravel": "^0.3.1",
+        "vue-eslint-parser": "^9.3.2",
+        "vue-tsc": "^1.8.19"
+    },
+    "dependencies": {
+        "@inertiajs/vue3": "^1.0.12",
+        "@timedoor/baskito-ui": "^0.3.1",
+        "axios": "^1.6.0",
+        "sweetalert": "^2.1.2",
+        "vue": "^3.3.6",
+        "ziggy-js": "^1.8.1"
+    }
+}

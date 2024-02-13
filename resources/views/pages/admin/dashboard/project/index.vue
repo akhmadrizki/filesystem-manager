@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import BaseTable from "@components/admin/table/BaseTable.vue";
 import PageSection from "@components/admin/layout/Page/PageSection.vue";
-import TableHeader from "@components/admin/table/TableHeader.vue";
 import { Head, useForm } from "@inertiajs/vue3";
 import InvalidFeedback from "@/views/components/admin/form/InvalidFeedback.vue";
 import { useSweetAlert } from "@timedoor/baskito-ui";
@@ -10,6 +9,25 @@ import { useRoute } from "@/scripts/utils/ziggy/useRoute";
 
 const { route } = useRoute();
 const { errorAlert, successAlert } = useSweetAlert();
+
+defineProps({
+  projects: {
+    type: Object,
+    required: true,
+  },
+});
+
+const formFilter = useForm({
+  query: "",
+});
+
+const submitFilter = function () {
+  formFilter.get(route("admin.dashboard.project.index"), {
+    preserveState: true,
+    preserveScroll: true,
+    only: ["projects"],
+  });
+};
 
 const projectForm = useForm({
   name: "",
@@ -22,6 +40,23 @@ const reset = () => {
 };
 
 const isLoading = ref(false);
+
+const copy = (token: string) => {
+  navigator.clipboard
+    .writeText(token)
+    .then(() => {
+      successAlert({
+        icon: "success",
+        text: "Token copied to clipboard!",
+      });
+    })
+    .catch(() => {
+      errorAlert({
+        title: "Error",
+        text: "Failed to copy token to clipboard!",
+      });
+    });
+};
 
 const save = () => {
   const options = {
@@ -53,40 +88,57 @@ const save = () => {
 <template layout="admin">
   <Head title="Project Lists" />
 
-  <PageSection
-    header="Projects List"
-    :back-link="$route('admin.dashboard')"
-    :full-width="true"
-  >
+  <PageSection header="Projects List" :full-width="true">
     <div class="card">
       <div class="card-header justify-content-between">
         <h4 class="text-capitalize">project</h4>
+
+        <div class="card-header-form mr-3 ml-auto">
+          <form @submit.prevent="submitFilter">
+            <div class="input-group">
+              <BKInput
+                v-model="formFilter.query"
+                type="text"
+                class="form-control"
+                placeholder="Search project name"
+              />
+              <div class="input-group-btn search-btn">
+                <BKButton type="submit"><i class="fas fa-search"></i></BKButton>
+              </div>
+            </div>
+          </form>
+        </div>
 
         <BKButton data-toggle="modal" data-target="#projectFormModal">
           Create New Project
         </BKButton>
       </div>
 
-      <BaseTable class="mt-3" colspan="7" :with-iteration="true">
-        <template #thead>
-          <TableHeader>Project Name</TableHeader>
-          <TableHeader></TableHeader>
-        </template>
-        <template #tbody="slotProps">
-          <td width="300">
-            <UserShortDetail :user="slotProps.data" />
-          </td>
-          <td><UserTypeBadge :type="slotProps.data.type" /></td>
-          <td>{{ slotProps.data.email }}</td>
-          <td>{{ slotProps.data.region.name }}</td>
-          <td>
-            <UserStatusBadge :user="slotProps.data" />
-          </td>
-          <td width="220">
-            <UserActionButton :user="slotProps.data" />
-          </td>
-        </template>
-      </BaseTable>
+      <div class="card-body p-0">
+        <BaseTable :paginated-collection="projects">
+          <template #thead>
+            <th>Project Name</th>
+            <th>Token</th>
+            <th>Action</th>
+          </template>
+
+          <template #tbody="slotProps">
+            <td>{{ slotProps.data.name }}</td>
+            <td>
+              <BKButton @click.prevent="copy(slotProps.data.token)">
+                <i class="fas fa-copy"></i>
+              </BKButton>
+            </td>
+            <td>delete</td>
+          </template>
+
+          <template #empty>
+            <td colspan="6">
+              <p class="text-center">Data not found</p>
+            </td>
+          </template>
+        </BaseTable>
+      </div>
     </div>
   </PageSection>
 
@@ -110,4 +162,8 @@ const save = () => {
   </Teleport>
 </template>
 
-<style scoped></style>
+<style scoped>
+.card-header h4 + .card-header-form .btn {
+  border-radius: 0 30px 30px 0 !important;
+}
+</style>

@@ -2,12 +2,16 @@
 
 namespace App\Models;
 
+use App\Http\Filter\ProjectFilter;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Timedoor\Filter\FilterTrait;
 
 class Project extends Model
 {
-    use HasFactory;
+    use HasFactory, FilterTrait;
+
+    protected $filterClass = ProjectFilter::class;
 
     /**
      * The attributes that are mass assignable.

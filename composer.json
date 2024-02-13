@@ -22,6 +22,7 @@
         "laravel/ui": "^4.1",
         "league/flysystem-aws-s3-v3": "^3.24",
         "tightenco/ziggy": "^1.5",
+        "timedoor/filter": "^1.0",
         "timedoor/laravel-role-js": "^0.1.1"
     },
     "require-dev": {

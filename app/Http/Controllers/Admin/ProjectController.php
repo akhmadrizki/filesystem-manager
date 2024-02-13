@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ProjectListResource;
 use App\Models\Project;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -11,9 +12,15 @@ use Illuminate\Support\Str;
 
 class ProjectController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return inertia('admin.dashboard.project.index');
+        $projects = Project::query()
+                    ->filter()
+                    ->paginate(10);
+
+        return inertia('admin.dashboard.project.index', [
+            'projects' => ProjectListResource::collection($projects),
+        ]);
     }
 
     public function store(Request $request)

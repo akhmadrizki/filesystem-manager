@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b9c1fd58a2b2761dabf9049c6c21c03c",
+    "content-hash": "45241718191486833094a364b4a1dd80",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -6633,6 +6633,50 @@
                 "source": "https://github.com/tijsverkoyen/CssToInlineStyles/tree/2.2.6"
             },
             "time": "2023-01-03T09:29:04+00:00"
+        },
+        {
+            "name": "timedoor/filter",
+            "version": "v1.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/backend-timedoor/filter.git",
+                "reference": "00bc39873fda2722682709db0d2cc0178e25fe29"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/backend-timedoor/filter/zipball/00bc39873fda2722682709db0d2cc0178e25fe29",
+                "reference": "00bc39873fda2722682709db0d2cc0178e25fe29",
+                "shasum": ""
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Timedoor\\Filter\\FilterServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Timedoor\\Filter\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Rizky Nur Hidayattulloh",
+                    "email": "rizky@timedoor.net"
+                }
+            ],
+            "description": "Query filter timedoor",
+            "support": {
+                "issues": "https://github.com/backend-timedoor/filter/issues",
+                "source": "https://github.com/backend-timedoor/filter/tree/v1.0.2"
+            },
+            "time": "2021-12-23T06:36:31+00:00"
         },
         {
             "name": "timedoor/laravel-role-js",

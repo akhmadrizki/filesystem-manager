@@ -16,4 +16,5 @@ Route::prefix('dashboard/project')
     ->group(function () {
         Route::get('', 'index')->name('index');
         Route::post('store', 'store')->name('store');
+        Route::post('regenerate/{project}', 'regenerate')->name('regenerate');
     });

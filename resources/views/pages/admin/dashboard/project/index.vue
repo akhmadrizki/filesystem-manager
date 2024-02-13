@@ -3,12 +3,14 @@ import BaseTable from "@components/admin/table/BaseTable.vue";
 import PageSection from "@components/admin/layout/Page/PageSection.vue";
 import { Head, useForm } from "@inertiajs/vue3";
 import InvalidFeedback from "@/views/components/admin/form/InvalidFeedback.vue";
+import { useConfiguredSwal } from "@/scripts/utils/alerts/useConfiguredSwal";
 import { useSweetAlert } from "@timedoor/baskito-ui";
 import { ref } from "vue";
 import { useRoute } from "@/scripts/utils/ziggy/useRoute";
 
 const { route } = useRoute();
 const { errorAlert, successAlert } = useSweetAlert();
+const { confirmationAlert } = useConfiguredSwal();
 
 defineProps({
   projects: {
@@ -58,7 +60,7 @@ const copy = (token: string) => {
     });
 };
 
-const save = () => {
+async function save() {
   const options = {
     preserveScroll: true,
     onError: () => {
@@ -67,22 +69,62 @@ const save = () => {
     onSuccess: () => {
       let modalName = "#" + "projectFormModal";
       $(modalName).modal("hide");
-    },
-    onFinish: () => {
-      isLoading.value = false;
 
       successAlert({
         icon: "success",
         text: "Project has been created!",
       });
     },
+    onFinish: () => {
+      isLoading.value = false;
+    },
   };
 
   if (!isLoading.value) {
     isLoading.value = true;
-    projectForm.post(route("admin.dashboard.project.store"), options);
+    try {
+      await projectForm.post(route("admin.dashboard.project.store"), options);
+    } catch (error) {
+      errorAlert({ title: "Error", text: "Failed to create project" });
+    } finally {
+      isLoading.value = false;
+    }
   }
-};
+}
+
+async function regenerateToken(id: number) {
+  const confirmed = await confirmationAlert({
+    title: "Confirmation",
+    text: "Are you sure you want to regenerate the token?",
+    icon: "warning",
+  });
+
+  if (confirmed) {
+    const options = {
+      preserveScroll: true,
+      onError: () => {
+        errorAlert({ title: "Error", text: "Oppss, please check your input!" });
+      },
+      onSuccess: () => {
+        successAlert({
+          icon: "success",
+          text: "Token has been regenerated!",
+        });
+      },
+      onFinish: () => {
+        isLoading.value = false;
+      },
+    };
+
+    if (!isLoading.value) {
+      isLoading.value = true;
+      projectForm.post(
+        route("admin.dashboard.project.regenerate", id),
+        options,
+      );
+    }
+  }
+}
 </script>
 
 <template layout="admin">
@@ -129,7 +171,12 @@ const save = () => {
                 <i class="fas fa-copy"></i>
               </BKButton>
             </td>
-            <td>delete</td>
+            <td>
+              <BKButton @click.prevent="regenerateToken(slotProps.data.id)">
+                <i class="fas fa-recycle"></i>
+                Regenearete Token
+              </BKButton>
+            </td>
           </template>
 
           <template #empty>

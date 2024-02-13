@@ -12,7 +12,7 @@
         /></Link>
       </div>
       <ul class="sidebar-menu">
-        <SideBarHeader>Example</SideBarHeader>
+        <SideBarHeader>Menu</SideBarHeader>
         <SideBarLink
           icon="fas fa-fire"
           :href="$route('admin.dashboard')"
@@ -28,6 +28,15 @@
         >
           Projects
         </SideBarLink>
+
+        <div class="mt-4 mb-4 p-3 hide-sidebar-mini">
+          <BKLinkButton
+            class="btn-lg btn-block btn-icon-split"
+            :href="$route('admin.dashboard.project.index')"
+          >
+            <i class="fas fa-rocket"></i> Documentation
+          </BKLinkButton>
+        </div>
       </ul>
     </aside>
   </div>

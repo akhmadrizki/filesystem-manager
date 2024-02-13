@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('slug')->unique();
+            $table->string('token');
             $table->string('access_token');
             $table->timestamps();
         });

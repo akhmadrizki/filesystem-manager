@@ -20,6 +20,7 @@ class ProjectSeeder extends Seeder
             $project     = Project::create([
                 'name'         => $project,
                 'slug'         => Str::slug($project),
+                'token'        => $accessToken,
                 'access_token' => hash('sha256', $accessToken),
             ]);
 

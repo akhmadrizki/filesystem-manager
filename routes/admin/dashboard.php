@@ -15,4 +15,5 @@ Route::prefix('dashboard/project')
     ->controller(ProjectController::class)
     ->group(function () {
         Route::get('', 'index')->name('index');
+        Route::post('store', 'store')->name('store');
     });

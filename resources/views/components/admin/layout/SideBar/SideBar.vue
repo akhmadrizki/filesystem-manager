@@ -32,7 +32,8 @@
         <div class="mt-4 mb-4 p-3 hide-sidebar-mini">
           <BKLinkButton
             class="btn-lg btn-block btn-icon-split"
-            :href="$route('admin.dashboard.project.index')"
+            :href="$route('docs')"
+            target="_blank"
           >
             <i class="fas fa-rocket"></i> Documentation
           </BKLinkButton>

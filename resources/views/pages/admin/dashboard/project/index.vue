@@ -172,7 +172,10 @@ async function regenerateToken(id: number) {
               </BKButton>
             </td>
             <td>
-              <BKButton @click.prevent="regenerateToken(slotProps.data.id)">
+              <BKButton
+                color="warning"
+                @click.prevent="regenerateToken(slotProps.data.id)"
+              >
                 <i class="fas fa-recycle"></i>
                 Regenearete Token
               </BKButton>

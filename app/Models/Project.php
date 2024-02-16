@@ -24,4 +24,14 @@ class Project extends Model
         'token',
         'access_token',
     ];
+
+    /**
+     * Get the files for the project.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function files()
+    {
+        return $this->hasMany(File::class, 'project_id');
+    }
 }

@@ -12,15 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('files', function (Blueprint $table) {
-            $table->id();
-            $table->foreignIdFor(\App\Models\Project::class)->constrained();
+            $table->uuid('id')->primary();
+            $table->foreignIdFor(\App\Models\Project::class)->constrained()->cascadeOnDelete();
             $table->string('name');
             $table->string('path');
-            $table->string('location_hash');
-            $table->boolean('is_directory');
-            $table->bigInteger('size');
-            $table->string('mime_type')->index();
-            $table->string('extension')->index();
             $table->timestamps();
         });
     }

@@ -22,4 +22,4 @@ Route::get('docs', function () {
     $file = url('doc/docs.yaml') . '?v=' . md5_file(public_path('doc/docs.yaml'));
 
     return view('docs', compact('title', 'file'));
-});
+})->name('docs');

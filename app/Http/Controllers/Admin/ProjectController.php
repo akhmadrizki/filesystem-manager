@@ -56,12 +56,21 @@ class ProjectController extends Controller
         return back();
     }
 
+    /**
+     * Update the token.
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @param  \App\Models\Project $project
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function regenerate(Request $request, Project $project)
     {
-        $token = Str::random(32);
+        $token       = Str::random(32);
+        $hashedToken = hash('sha256', $token);
+
         $project->update([
-            'token'        => Str::random(32),
-            'access_token' => hash('sha256', $token),
+            'token'        => $token,
+            'access_token' => $hashedToken,
         ]);
 
         return back();

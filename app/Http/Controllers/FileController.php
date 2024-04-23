@@ -31,15 +31,18 @@ class FileController extends Controller
         try {
             Storage::disk('s3')->putFile($directory, $file);
 
+            $path = $request->path != '/' ? trim($request->path, '/') . '/' . $file->hashName() : $file->hashName();
+
             $uploadedFile = $project->files()->create([
                 'name' => $file->hashName(),
-                'path' => $request->path.'/'.$file->hashName(),
+                'path' => $path,
             ]);
         } catch (Exception $e) {
             return APIErrorResponse::new($e)->send();
         }
 
         return APIMessageResponse::new('File uploaded successfully', [
+            'id'   => $uploadedFile->id,
             'name' => $file->getClientOriginalName(),
             'path' => $uploadedFile->path,
             'url'  => route('presigned', ['file' => $uploadedFile->id]),
@@ -61,7 +64,10 @@ class FileController extends Controller
         $adapter   = $s3->getAdapter();
         $filePath  = File::find($file);
 
-        return redirect($adapter->temporaryUrl($filePath->path, Carbon::now()->addMinutes(5), new \League\Flysystem\Config()));
+        $project = $filePath->project;
+        $directory = $project->slug.'/'.trim($filePath->path, '/');
+
+        return redirect($adapter->temporaryUrl($directory, Carbon::now()->addMinutes(5), new \League\Flysystem\Config()));
     }
 
     /**

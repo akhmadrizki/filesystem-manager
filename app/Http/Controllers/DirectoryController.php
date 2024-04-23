@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\DirectoryListRequest;
 use App\Http\Resources\DirectoryListResource;
+use App\Models\File;
 use App\Supports\APIErrorResponse;
 use App\Supports\APIMessageResponse;
 use Carbon\Carbon;
@@ -18,7 +19,7 @@ class DirectoryController extends Controller
     public function contents(DirectoryListRequest $request)
     {
         $project  = $request->get('project');
-        $contents = Storage::listContents($project->slug.'/'.$request->path)
+        $contents = collect(Storage::listContents($project->slug.'/'.$request->path)
             ->map(function (StorageAttributes $attributes) use ($project) {
                 $lastModified = $attributes->lastModified();
 
@@ -29,8 +30,21 @@ class DirectoryController extends Controller
                     'size'          => $attributes instanceof FileAttributes ? $attributes->fileSize() : 0,
                     'last_modified' => ! is_null($lastModified) ? Carbon::createFromTimestamp($lastModified)->toDateTimeString() : null,
                 ];
-            })
-            ->toArray();
+            })->toArray());
+
+        $files = File::query()->whereIn('name', $contents->pluck('name'))->get(['id', 'name', 'path']);
+        $contents = $contents->map(function ($content) use ($files) {
+            if ($content['is_directory'] === false) {
+                $file = $files->firstWhere('name', $content['name']);
+
+                if ($file instanceof File) {
+                    $content['id']  = $file->id;
+                    $content['url'] = route('presigned', ['file' => $file->id]);
+                }
+            }
+
+            return $content;
+        });
 
         return DirectoryListResource::collection($contents);
     }

@@ -26,6 +26,7 @@ class DirectoryController extends Controller
                 return [
                     'name'          => basename($attributes->path()),
                     'path'          => ltrim($attributes->path(), $project->slug.'/'),
+                    'file_type'     => $attributes instanceof FileAttributes ? Storage::mimeType($attributes->path()) : null,
                     'is_directory'  => $attributes->isDir(),
                     'size'          => $attributes instanceof FileAttributes ? $attributes->fileSize() : 0,
                     'last_modified' => ! is_null($lastModified) ? Carbon::createFromTimestamp($lastModified)->toDateTimeString() : null,
@@ -69,7 +70,11 @@ class DirectoryController extends Controller
     public function delete(Request $request)
     {
         $validated = $request->validate([
-            'path' => ['required', 'string'],
+            'path' => ['required', 'string', function ($attribute, $value, $fail) {
+                if ($value === '/') {
+                    $fail('The '.$attribute.' cannot be a forward slash.');
+                }
+            }],
         ]);
 
         $project = $request->get('project');

@@ -10,6 +10,7 @@ use App\Supports\APIMessageResponse;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Storage;
 use League\Flysystem\FileAttributes;
 use League\Flysystem\StorageAttributes;
@@ -34,7 +35,7 @@ class DirectoryController extends Controller
             })->toArray());
 
         $files = File::query()->whereIn('name', $contents->pluck('name'))->get(['id', 'name', 'path']);
-        $contents = $contents->map(function ($content) use ($files) {
+        $contents = $contents->map(function ($content) use ($files, $project) {
             if ($content['is_directory'] === false) {
                 $file = $files->firstWhere('name', $content['name']);
 
@@ -42,6 +43,11 @@ class DirectoryController extends Controller
                     $content['id']  = $file->id;
                     $content['url'] = route('presigned', ['file' => $file->id]);
                 }
+            } else {
+                $directoryPath = $project->slug.'/'.$content['path'];
+                $hasContent    = $this->checkDirectoryContent($directoryPath);
+
+                $content['has_content']  = $hasContent;
             }
 
             return $content;
@@ -56,15 +62,32 @@ class DirectoryController extends Controller
             'path' => ['required', 'string'],
         ]);
 
-        $project = $request->get('project');
+        $project       = $request->get('project');
+        $directoryPath = $project->slug.'/'.$validated['path'];
+
+        if (Storage::exists($directoryPath)) {
+            return response()->json([
+                'message' => 'Directory already exists.',
+                'errors' => [
+                    'path' => ['Directory already exists.']
+                ]
+            ], 422);
+        }
 
         try {
-            Storage::makeDirectory($project->slug.'/'.$validated['path']);
+            Storage::makeDirectory($directoryPath);
         } catch (Exception $e) {
             return APIErrorResponse::new($e)->send();
         }
 
-        return APIMessageResponse::new('Directory created successfully')->send();
+        return JsonResource::make([
+            'name'          => basename($validated['path']),
+            'path'          => ltrim($validated['path'], $project->slug.'/'),
+            'file_type'     => null,
+            'is_directory'  => true,
+            'size'          => 0,
+            'last_modified' => null,
+        ]);
     }
 
     public function delete(Request $request)
@@ -86,5 +109,13 @@ class DirectoryController extends Controller
         }
 
         return APIMessageResponse::new('Directory deleted successfully')->send();
+    }
+
+    protected function checkDirectoryContent($directoryPath)
+    {
+        $files          = Storage::allFiles($directoryPath);
+        $subDirectories = Storage::allDirectories($directoryPath);
+
+        return !empty($files) || !empty($subDirectories);
     }
 }

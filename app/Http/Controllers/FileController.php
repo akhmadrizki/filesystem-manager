@@ -43,10 +43,13 @@ class FileController extends Controller
 
         return APIMessageResponse::new('File uploaded successfully', [
             'id'        => $uploadedFile->id,
-            'name'      => $file->getClientOriginalName(),
+            'name'      => $uploadedFile->name,
             'file_type' => $file->getClientMimeType(),
             'path'      => $uploadedFile->path,
+            'size'      => $file->getSize(),
             'url'       => route('presigned', ['file' => $uploadedFile->id]),
+            'is_directory' => $file->isDir(),
+            'last_modified' => $uploadedFile->created_at->toDateTimeString(),
         ])->send();
     }
 
